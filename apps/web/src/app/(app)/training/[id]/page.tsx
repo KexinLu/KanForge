@@ -41,8 +41,6 @@ export default async function TrainingRunPage({
     .eq("training_run_id", id)
     .order("created_at", { ascending: true });
 
-  const activeCount = images?.filter((i) => !i.rejected).length ?? 0;
-
   return (
     <Container size="lg" py="md">
       <Group justify="space-between" mb="lg">
@@ -67,7 +65,7 @@ export default async function TrainingRunPage({
         {images && images.length > 0 && (
           <div>
             <Text fw={600} mb="sm">
-              Images ({activeCount} active, {images.length} total)
+              Images ({images.length})
             </Text>
             <ImageGallery images={images} />
           </div>
