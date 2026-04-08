@@ -40,5 +40,12 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Strip stale ?code= param after Supabase PKCE exchange
+  if (user && request.nextUrl.searchParams.has("code")) {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete("code");
+    return NextResponse.redirect(url);
+  }
+
   return supabaseResponse;
 }

@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import {
   Badge,
-  Button,
   Card,
   Container,
   Group,
@@ -12,7 +11,6 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import Link from "next/link";
 
 interface TrainingRun {
   id: string;
@@ -60,13 +58,11 @@ function TrainingRunCard({ run }: { run: TrainingRun }) {
 
 function EmptyState() {
   return (
-    <Stack align="center" gap="lg" mt={80}>
+    <Stack align="center" gap="md" mt={80}>
       <Title order={2}>No training runs yet</Title>
       <Text c="dimmed" size="lg" ta="center" maw={400}>
-        Create your first style LoRA by uploading reference images and letting
-        KanForge handle the rest.
+        Create your first style LoRA using the sidebar.
       </Text>
-      <Button size="lg">New Style Training</Button>
     </Stack>
   );
 }
@@ -84,10 +80,9 @@ async function TrainingRunList() {
 
   return (
     <>
-      <Group justify="space-between" mb="lg">
-        <Title order={2}>Training Runs</Title>
-        <Button>New Style Training</Button>
-      </Group>
+      <Title order={2} mb="lg">
+        Training Runs
+      </Title>
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
         {runs.map((run) => (
           <TrainingRunCard key={run.id} run={run} />
@@ -100,10 +95,7 @@ async function TrainingRunList() {
 function LoadingSkeleton() {
   return (
     <Stack gap="md">
-      <Group justify="space-between">
-        <Skeleton height={32} width={200} />
-        <Skeleton height={36} width={160} />
-      </Group>
+      <Skeleton height={32} width={200} />
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} height={140} radius="md" />
