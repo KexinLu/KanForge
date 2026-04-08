@@ -30,6 +30,8 @@ function LoginForm() {
       if (error) {
         setError(error.message);
         setLoading(false);
+        // Strip stale code from URL to prevent retry loop
+        router.replace("/login");
       } else {
         router.push("/");
       }
