@@ -1,21 +1,24 @@
-import { Container, Title, Text, Button, Stack, Group } from "@mantine/core";
+import { Container, Group, Title, Text, Stack, Button } from "@mantine/core";
+import { UserMenu } from "@/components/user-menu";
+
+export const dynamic = "force-dynamic";
 
 export default function Home() {
   return (
-    <Container size="sm" py="xl">
-      <Stack align="center" gap="lg" mt={80}>
-        <Title order={1}>KanForge</Title>
-        <Text c="dimmed" size="lg" ta="center">
-          One-click LoRA training for ZImage Turbo. Upload images, auto-caption,
-          train on cloud GPU, generate, download your LoRA.
-        </Text>
-        <Group>
-          <Button size="lg">Get Started</Button>
-          <Button size="lg" variant="outline">
-            Learn More
-          </Button>
-        </Group>
-      </Stack>
-    </Container>
+    <>
+      <Group justify="space-between" px="md" py="sm">
+        <Title order={3}>KanForge</Title>
+        <UserMenu />
+      </Group>
+      <Container size="sm" py="xl">
+        <Stack align="center" gap="lg" mt={40}>
+          <Title order={1}>Dashboard</Title>
+          <Text c="dimmed" size="lg" ta="center">
+            Upload images, train a LoRA, generate with ZImage Turbo.
+          </Text>
+          <Button size="lg">New Training Job</Button>
+        </Stack>
+      </Container>
+    </>
   );
 }
