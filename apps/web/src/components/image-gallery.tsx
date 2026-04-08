@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -60,11 +61,41 @@ export function ImageGallery({ images }: { images: TrainingImage[] }) {
     if (images.length > 0) loadUrls();
   }, [images, supabase]);
 
-  const toggleReject = async (image: TrainingImage) => {
-    await supabase
+  const deleteImage = async (image: TrainingImage) => {
+    // Delete from storage
+    const { error: storageError } = await supabase.storage
+      .from("training-assets")
+      .remove([image.storage_path]);
+
+    if (storageError) {
+      notifications.show({
+        title: "Delete failed",
+        message: storageError.message,
+        color: "red",
+      });
+      return;
+    }
+
+    // Delete from DB
+    const { error: dbError } = await supabase
       .from("training_images")
-      .update({ rejected: !image.rejected })
+      .delete()
       .eq("id", image.id);
+
+    if (dbError) {
+      notifications.show({
+        title: "Delete failed",
+        message: dbError.message,
+        color: "red",
+      });
+      return;
+    }
+
+    // If lightbox is open on this image, close it
+    if (opened && activeImage?.id === image.id) {
+      close();
+    }
+
     router.refresh();
   };
 
@@ -87,7 +118,6 @@ export function ImageGallery({ images }: { images: TrainingImage[] }) {
               position: "relative",
               borderRadius: "var(--mantine-radius-md)",
               overflow: "hidden",
-              opacity: image.rejected ? 0.4 : 1,
               cursor: "pointer",
             }}
           >
@@ -97,10 +127,10 @@ export function ImageGallery({ images }: { images: TrainingImage[] }) {
               radius="md"
               onClick={() => openLightbox(index)}
             />
-            <Tooltip label={image.rejected ? "Restore" : "Reject"}>
+            <Tooltip label="Delete">
               <ActionIcon
                 variant="filled"
-                color={image.rejected ? "green" : "red"}
+                color="red"
                 size="sm"
                 radius="xl"
                 style={{
@@ -110,10 +140,10 @@ export function ImageGallery({ images }: { images: TrainingImage[] }) {
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleReject(image);
+                  deleteImage(image);
                 }}
               >
-                {image.rejected ? "+" : "×"}
+                ×
               </ActionIcon>
             </Tooltip>
           </Box>
