@@ -11,12 +11,13 @@ We are not building toys, always function as professional engineers, design prop
 KanForge is a one-click LoRA training platform for ZImage Turbo. Upload images, auto-caption, train on cloud GPU, generate, download your LoRA.
 
 **Tech Stack:**
-- TypeScript: Next.js 15 (App Router) + Tailwind + shadcn/ui
+- TypeScript: Next.js 16 (App Router) + Mantine v9
 - Python: Modal (GPU/CPU serverless endpoints)
 - Supabase: Auth, PostgreSQL, Storage, Edge Functions, Realtime
 - Stripe: Subscriptions and usage-based billing
+- Tooling: mise (node, pnpm, python, uv, ruff)
 
-**Architecture:** Flat and simple. No Clean Architecture, no layered patterns. This is a lean MVP product.
+**Architecture:** Flat and simple. Lean MVP — ship fast, iterate fast.
 
 ## Build & Dev Commands
 
@@ -45,14 +46,20 @@ KanForge is a one-click LoRA training platform for ZImage Turbo. Upload images, 
 - `pnpm test` -- Vitest (frontend)
 - `pytest packages/modal/tests/` -- pytest (Python)
 
-## Story & Task Management
+## Git Workflow
 
-**Stories = GitHub Issues** on KexinLu/KanForge
+Simple branch-and-merge. No worktrees for now.
 
+- **Branch naming:** `{issue_number}-{slug}` (e.g. `12-upload-flow`)
+- Work on feature branches, merge to `main` via PR
 - Use `gh` CLI for all issue/PR operations
-- GitHub is the source of truth for all work tracking
+- GitHub Issues on KexinLu/KanForge is the source of truth for work tracking
 
 ## WNext Working Memory
+
+**Project ID:** `46cfadad-f065-447a-bd74-6dc8b1e02747` (KanForge)
+
+Always use this `projectId` for all WNext calls in this repo. Do NOT use the MeshStudio project.
 
 When WNext MCP is available, register an actor at the start of each session before any other WNext calls. All WNext operations require an `actorId`.
 
@@ -64,42 +71,6 @@ mcp__wnext__register_actor:
 ```
 
 This is idempotent. Pass the returned `actorId` to all subsequent WNext calls. If WNext is unavailable, skip and use GitHub directly.
-
-## Skills (Slash Commands)
-
-**Always use skills for common workflows.** They ensure consistency and handle edge cases.
-
-### Mainframe Skills
-
-Skills used by the mainframe orchestrator (runs from `main/`).
-
-| Skill | What it does |
-|-------|--------------|
-| `/mf-issue-prepare` | Full setup: worktree + discovery + task planning |
-| `/mf-worktree-setup` | Create worktree with .worktree.json |
-| `/mf-quick-work` | Fast-track small tasks: WNext-only, worktree, review, direct merge |
-| `/mf-post-pr` | Post-merge: tear down worktree, delete branch, close WNext |
-| `/mf-review` | Review worktree diff via sub-agent |
-
-### Worker Skills
-
-Skills used by workers (run from worktree directories).
-
-| Skill | What it does |
-|-------|--------------|
-| `/wk-discover` | Find patterns, conventions before coding |
-| `/wk-report` | Record findings to WNext: problems, solutions, files changed |
-| `/wk-pre-pr` | Pre-PR: summary, GitHub sync, verify tests pass |
-| `/wk-pr` | Create PR linked to GitHub Issue |
-
-**Skill Location:** `.claude/skills/mainframe/` and `.claude/skills/worker/`
-
-### Operating Modes
-
-| Mode | Purpose | Location |
-|------|---------|----------|
-| **Mainframe** | Main-branch orchestration: track workstreams, resolve conflicts, WNext sync | `.claude/modes/mainframe.md` |
-| **Worker** | Worktree implementation: session startup, dev env, debugging, mainframe communication | `.claude/modes/worker.md` |
 
 ## Development Guidelines
 
@@ -128,43 +99,16 @@ Skills used by workers (run from worktree directories).
 - After schema changes, regenerate types: `supabase gen types typescript --local > apps/web/lib/database.types.ts`
 - **Always fix pre-existing errors** encountered during work -- lint errors, type errors, broken imports. Do not leave broken code behind.
 
-## Worktree Protocol
-
-Development uses git worktrees for task isolation. **Use skills for setup and cleanup.**
-
-### Directory Structure
-
-```
-KanForge/                # Workspace root
-├── main/                # Main branch - sync only, no direct development
-└── worktrees/           # Flat structure
-    ├── 42-upload-flow/
-    ├── 43-training-ui/
-    └── 44-billing/
-```
-
-**Branch naming:** `{issue_number}-{slug}`. No prefixes. Branch name and worktree directory name MUST match.
-
-### Manual Commands (if needed)
-
-```bash
-# Create worktree
-git worktree add ../worktrees/42-upload-flow -b 42-upload-flow
-
-# Remove worktree
-git worktree remove ../worktrees/42-upload-flow
-```
-
 ## Project Structure
 
 ```
 KanForge/
-├── apps/web/             # Next.js app (App Router)
+├── apps/web/             # Next.js app (App Router) + Mantine
 ├── packages/modal/       # Modal Python endpoints
 ├── supabase/
 │   ├── migrations/       # SQL schema migrations
 │   └── functions/        # Supabase Edge Functions (Deno)
-├── workstreams.json      # Active workstream tracking
+├── mise.toml             # Tool versions (node, python, pnpm, etc.)
 ├── CLAUDE.md             # This file
 └── README.md             # Product overview
 ```

@@ -1,0 +1,10 @@
+{
+  "name": "kanforge",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @kanforge/web dev",
+    "build": "pnpm --filter @kanforge/web build",
+    "lint": "pnpm --filter @kanforge/web lint",
+    "test": "pnpm --filter @kanforge/web test"
+  }
+}
